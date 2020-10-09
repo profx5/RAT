@@ -1,5 +1,5 @@
 import asyncio
-from aio_pika import connect, IncomingMessage
+from aio_pika import connect, IncomingMessage, RobustConnection
 
 loop = asyncio.get_event_loop()
 
@@ -19,7 +19,8 @@ async def on_message(message: IncomingMessage):
 
 async def main():
     # Perform connection
-    connection = await connect("amqp://guest:guest@localhost/", loop=loop)
+    connection = RobustConnection("amqp://guest:guest@0.0.0.0:35672/")
+    await connection.connect()
 
     # Creating a channel
     channel = await connection.channel()

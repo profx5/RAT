@@ -15,3 +15,26 @@ class TaskNotFound(BaseRATException):
     def __init__(self, name: str) -> None:
         self.message = f"Task {name} not found in registry"
         super().__init__()
+
+
+class MessageProcessingError(BaseRATException):
+    message = "Message processing error"
+    code = "message_processing_error"
+
+    requeue = False
+
+
+class NackMessage(MessageProcessingError):
+    message = "Nack message"
+    code = "nack_message"
+
+    def __init__(self, requeue=False) -> None:
+        self.requeue = requeue
+
+
+class RejectMessage(MessageProcessingError):
+    message = "Reject message"
+    code = "reject_message"
+
+    def __init__(self, requeue=False) -> None:
+        self.requeue = requeue

@@ -1,5 +1,4 @@
-import uuid
-from typing import Optional, Dict
+from typing import Optional, Dict, Tuple
 
 from rat.types import TaskMessage, Task
 from rat.exceptions import TaskNotFound
@@ -15,13 +14,20 @@ class TasksRegistry:
     def get_task(self, name: str) -> Optional[Task]:
         return self._registry.get(name)
 
-    def build_message(self, name: str, **kwargs) -> TaskMessage:
+    def build_message(
+        self, name: str, timeout: Optional[None] = None, **kwargs
+    ) -> Tuple[TaskMessage, str]:
         task = self.get_task(name)
         if not task:
             raise TaskNotFound(name)
 
-        return TaskMessage(
-            name=name,
-            uid=uuid.uuid4().hex,
-            kwargs=kwargs,
+        timeout = timeout or task.timeout
+
+        return (
+            TaskMessage(
+                name=name,
+                kwargs=kwargs,
+                timeout=timeout,
+            ),
+            task.routing_key,
         )
